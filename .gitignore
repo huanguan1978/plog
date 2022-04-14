@@ -1,0 +1,46 @@
+# -*- mode: gitignore; -*-
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# eshell files
+/eshell/history
+/eshell/lastdir
+
+# projectiles files
+.projectile
+
+# directory configuration
+.dir-locals.el
+
+# --------------
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+
+#php-cs-fixer
+/.php_cs
+
+#PHPUnit
+/.phpunit.cache
+
+# Composer.gitignore
+composer.phar
+/vendor/
+
+.ac-php-conf.json
+composer.lock
+logger/Simple-PHP-Logger/

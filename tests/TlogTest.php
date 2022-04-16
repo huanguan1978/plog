@@ -2,12 +2,10 @@
 
 namespace Plog\Tests;
 
-use PDO;
 use PHPUnit\Framework\TestCase;
 use Plog\Tlogger;
 
 class TlogTest extends TestCase {
-    protected $dbh;
     protected $log;
     protected $tempfile;
 
@@ -55,7 +53,7 @@ class TlogTest extends TestCase {
         $ok = $this->log->info($message, $data);
         $this->assertTrue($ok);
         if($ok){
-            echo $logfile;
+            // echo $logfile;
             $lastline = $this->tailfile($logfile);
             $this->assertNotEmpty($lastline);
             if($lastline){

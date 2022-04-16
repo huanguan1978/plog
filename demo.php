@@ -3,9 +3,9 @@
 // require 'vendor/autoload.php';
 
 const _PLOGLIB = [
-    'Plog\Logger'=> 'src'.DIRECTORY_SEPARATOR.'Logger.php',
-    'Plog\Tlogger'=> 'src'.DIRECTORY_SEPARATOR.'TLogger.php',
-    'Plog\Plogger'=> 'src'.DIRECTORY_SEPARATOR.'PLogger.php',
+    'Plog\Logger'=>  '.'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Logger.php',
+    'Plog\Tlogger'=> '.'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'TLogger.php',
+    'Plog\Plogger'=> '.'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'PLogger.php',
 ];
 
 function _autoload_($class_name) {

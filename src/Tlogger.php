@@ -5,23 +5,33 @@
 
 namespace Plog;
 
-// require 'Logger.php';
-
 use Plog\Logger;
 
 class Tlogger extends Logger
 {
 
-    /** 新增成员，指定存放日期的路径
-     * $log_path - path
-     * @var string
-     */
+    /**
+     $log_path - 指定存放日期的目录
+     @var string
+    */
     protected static $log_path;
+
+    /**
+     * $options - settable options
+     * @var array $dateFormat of the format used for the log.txt file; $logFormat used for the time of a single log event
+     */
+    protected static $options = [
+        'dateFormat' => 'Y-m-d',
+        'logFormat' => 'Y-m-d H:i:s'
+    ];
 
     private static $instance;
 
-
-    // 传递一个写日志用的路径和文件名并返回拼接好路径的日志文件名
+    /**
+      指定一个写日志用的路径和文件名并返回当前存放日志的目录
+     @param string $log_path - 指定存放日志的目录
+     @retrun string 返回当前存放日志的目录
+    */
     static function logpath(string $logpath=null):string {
 
         if(empty($logpath)){
@@ -38,10 +48,11 @@ class Tlogger extends Logger
 
 
 
-    /** 覆写此方法，产生指定目录的log_file
-     * Create the log file
+    /**
+     * 覆写此方法，指定的目录下产生日志文件
      * @param string $log_file - path and filename of log
      * @param array $params - settable options
+     * return string 当前所用的日志文件
      */
     public static function createLogFile()
     {
@@ -64,9 +75,6 @@ class Tlogger extends Logger
         }
         return static::$log_file;
     }
-
-
-
 
     public static function getInstance()
     {

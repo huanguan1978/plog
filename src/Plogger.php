@@ -5,29 +5,44 @@
 namespace Plog;
 
 use PDO;
-require_once 'Logger.php';
-// use Plog\Logger;
+use Plog\TLogger;
 
 class Plogger extends Logger
 {
-    /** 覆写此成员，存放日志的数据表名，
-     * $log_file - path and log file name
+    /**
+     * $log_file - 覆写此成员，存放日志的数据表名
      * @var string
      */
     protected static $log_file;
 
-    /** 覆写此成员，存放PDO连接实例
-     * $file - file
-     * @var string
+    /**
+     * $file - 覆写此成员，存放PDO连接实例
+     * @var object
      */
     protected static $file;
 
+    /**
+     * $options - settable options
+     * @var array $dateFormat of the format used for the log.txt file; $logFormat used for the time of a single log event
+     */
+    protected static $options = [
+        'dateFormat' => 'Y-m-d',
+        'logFormat' => 'Y-m-d H:i:s'
+    ];
+
     private static $instance;
 
-    // PDO所用的数据驱动名,如:sqlite,mysql
+    /**
+      $driver_name - PDO所用的数据驱动名,如:sqlite,mysql
+      @var string
+    */
     protected static $driver_name;
 
-    // 传递一个可写的PDO连接进来
+    /**
+      传递一个可写的PDO连接进来
+      @param object $dblink 已实例化过的PDO连接对像
+      @return object 已实例化过的PDO连接对像
+    */
     static function dblink(PDO $dblink=null){
         if($dblink && ($dblink instanceof PDO) ){
             try{
@@ -40,7 +55,11 @@ class Plogger extends Logger
         return static::$file;
     }
 
-    // 获得当前PDO连接的数据库类型
+    /**
+      获得当前PDO连接的数据库类型，注意有些驱动类型无法自动侦测时请一定要传参指定，如sqlite类型
+      @param string $name PDO所支持的数据驱动类型名字，如mysql,sqlite等
+      @return string 数据驱动类型名字
+    */
     static function dbtype(string $name=null):string {
         $dblink = static::dblink();
         if($name){
@@ -57,13 +76,22 @@ class Plogger extends Logger
         return static::$driver_name;
     }
 
-    // 获得当前PDO连接最后插入的自增ID
+    /**
+      获得当前PDO连接最后插入的自增ID
+      @link https://www.php.net/manual/en/pdo.lastinsertid.php [php.net官方参考]
+      @param string $name 当数据表的主键为序列类型时需指定序列名
+      @return string 自增ID值
+    */
     static function lastInsertId(string $name=null):string {
         $dblink = static::dblink();
         return $dblink->lastInsertId($name);
     }
 
-    // 查询指定的表主键下的单条数据
+    /**
+      查询指定编号的单条日志数据
+      @param string $id 日志记录编号
+      @return array 单条日志祥细内容
+    */
     static function dbfind(string $id):array {
         $result = [];
         $dblink = static::dblink();
@@ -76,7 +104,12 @@ class Plogger extends Logger
         return $result;
     }
 
-    // 传递一个写日志用的表名，	如 _plog为当前连接主库下的表，other._plog为当前连接other库下的表
+    /**
+      传递一个写日志用的表名
+      @param string $dbtable 日志记录数据表名，如 _plog为当前连接主库下的表，other._plog为当前连接other库下的_plog表
+      @param bool $create 若数据表不存的情况下是否自动生成日志记录表，建议在类实例化后仅调用一次
+      @return string 数据表名
+    */
     static function dbtable(string $dbtable=null, bool $create=false){
         $sql = 'CREATE TABLE IF NOT EXISTS %s(%s,
             time VARCHAR(32)	NOT NULL,
@@ -120,7 +153,11 @@ class Plogger extends Logger
         return static::$log_file;
     }
 
-    // 覆写此方法，建立PDO连接
+    /**
+      覆写此方法，生成日志文件，重用PDO连接
+      @see dblink()
+      @return object 已实例化过的PDO连接对像
+    */
     static function createLogFile(){
         if(! static::$file){
             static::$file = static::dblink();
@@ -128,7 +165,7 @@ class Plogger extends Logger
     }
 
     /**
-     * 覆写此方法，写数据到表
+     * 覆写此方法，写日志记录到数据表
      * @param array $args Array of message (for log file),
      * line (of log method execution), severity (for log file) and displayMessage (to display on frontend for the used)
      * @return bool, true:success, false:failure
@@ -145,7 +182,9 @@ class Plogger extends Logger
         $time = date(static::$options['logFormat']);
 
         // Convert context to json
-        $context = json_encode($args['context']);
+        $context = json_encode($args['context'], JSON_HEX_APOS|JSON_UNESCAPED_UNICODE);
+        // $message = json_encode($args['message'], JSON_HEX_APOS|JSON_UNESCAPED_UNICODE);
+        $message = str_replace("'", '', $args['message']);
 
         $caller = array_shift($args['bt']);
         $btLine = $caller['line'];
@@ -159,7 +198,7 @@ class Plogger extends Logger
         $pathLog = is_null($path) ? "[N/A] " : "[{$path}] ";
         $lineLog = is_null($btLine) ? "[N/A] " : "[{$btLine}] ";
         $severityLog = is_null($args['severity']) ? "[N/A]" : "[{$args['severity']}]";
-        $messageLog = is_null($args['message']) ? "N/A" : "{$args['message']}";
+        $messageLog = is_null($args['message']) ? "N/A" : "{$message}";
         $contextLog = empty($args['context']) ? "" : "{$context}";
 
         // Write time, url, & message to end of file
@@ -193,8 +232,9 @@ class Plogger extends Logger
             }
         }else{
             $stmt = sprintf("INSERT INTO `%s`(`time`,`path`,`line`,`severity`,`message`,`context` ) VALUES('%s','%s','%s','%s','%s','%s');",
-                            $table, $timeLog, $pathLog, $lineLog, $severityLog, addslashes($messageLog), addslashes($context)
+                            $table, $timeLog, $pathLog, $lineLog, $severityLog, $messageLog,$contextLog
             );
+            // echo $stmt;
             $success = $lnk->exec($stmt);
             $ok = ($success===false)?false:true;
             // var_dump($ok);exit;
@@ -202,11 +242,12 @@ class Plogger extends Logger
         return $ok;
     }
 
-
-    // 覆写此方法，检查连接尝试断开连接
+    /**
+      覆写此方法，在写完日志后检查连接尝试断开连接，PDO连接是自动回收无需手动关闭
+    */
     static function closeFile(){
         if(static::$file instanceof PDO ){
-            static::$file = null;
+            // static::$file = null;
         }
     }
 
@@ -217,28 +258,6 @@ class Plogger extends Logger
         }
         return self::$instance;
     }
-
-
-    /**
-     * Convert absolute path to relative url (using UNIX directory seperators)
-     *
-     * E.g.:
-     *      Input:      D:\development\htdocs\public\todo-list\index.php
-     *      Output:     localhost/todo-list/index.php
-     *
-     * @param string Absolute directory/path of file which should be converted to a relative (url) path
-     * @return string Relative path
-     */
-    public static function absToRelPath($pathToConvert)
-    {
-        if(php_sapi_name()=='cli'){ // run cli mode
-            return __FILE__;
-        }
-        $pathAbs = str_replace(['/', '\\'], '/', $pathToConvert);
-        $documentRoot = str_replace(['/', '\\'], '/', $_SERVER['DOCUMENT_ROOT']);
-        return $_SERVER['SERVER_NAME'] . str_replace($documentRoot, '', $pathAbs);
-    }
-
 
     function __construct()
     { }

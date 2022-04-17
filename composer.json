@@ -1,5 +1,5 @@
 {
-    "name": "x/plog",
+    "name": "orz/plog",
     "type": "library",
     "description": "PSR3 logging library that is PDO extendable and simple to use",
     "keywords": ["php", "errors", "monitoring", "error-monitoring", "logging", "logger", "syslog", "psr-3", "stderr", "PDO"],
@@ -28,7 +28,7 @@
             "type": "github",
 	    "url": "https://github.com/huanguan1978/plog",	    
             "package": {
-                "name": "x/plog",
+                "name": "orz/plog",
 		"version":"0.1.0",
 		"dist": {
 		    "type": "zip",

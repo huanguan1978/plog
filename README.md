@@ -14,7 +14,7 @@ $tlog->debug("I'mHere",['data'=>['123','456']]);
 
 ## TextLog Output
 
-``` text
+``` plaintext
 [2022-04-16 16:43:08] [test2.localhost.localdomain/xz/plog/demo.php] [12] : [INFO] - HelloWorld 
 [2022-04-16 16:43:08] [test2.localhost.localdomain/xz/plog/demo.php] [13] : [DEBUG] - I'mHere {"data":["123","456"]}
 
@@ -50,6 +50,15 @@ SELECT * FROM plog;
 | 1 | 2022-04-16 16:29:30 | test2.localhost.localdomain/xz/plog/demo.php | 25 | INFO | HelloWorld |  |
 | 2 | 2022-04-16 16:29:30 | test2.localhost.localdomain/xz/plog/demo.php | 26 | DEBUG | ImHere | {"data":\["123","456","I\\u0027m"\]} |
 
-
 ## Installation
-[Download ZIP](https://github.com/huanguan1978/plog/archive/refs/heads/main.zip) See demo.php.
+
+Install the latest version with:
+
+``` shell
+$ composer require orz/plog
+
+```
+
+## Usage without composer
+
+[Download ZIP](https://github.com/huanguan1978/plog/archive/refs/heads/main.zip) See demo2.php.

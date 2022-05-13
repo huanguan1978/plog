@@ -122,7 +122,7 @@ class Plogger extends Logger
         $idefsql = [
             'mysql'=>'id INTEGER PRIMARY KEY AUTO_INCREMENT',
             'sqlite'=>'id INTEGER PRIMARY KEY AUTOINCREMENT',
-            'postgresql'=>'id SERIAL PRIMARY KEY',
+            'pgsql'=>'id SERIAL PRIMARY KEY',
             'sqlsrv'=>'id INT PRIMARY KEY IDENTITY',
         ];
         $idstmt = '';
@@ -135,7 +135,7 @@ class Plogger extends Logger
                 }
                 if(false !==stripos('sqlite', $driver_name)){	$driver = 'sqlite'; $idstmt=$idefsql[$driver];
                 }
-                if(false !==stripos('postgresql',$driver_name)){$driver = 'postgresql'; $idstmt=$idefsql[$driver];
+                if(false !==stripos('pgsql',$driver_name)){     $driver = 'pgsql'; $idstmt=$idefsql[$driver];
                 }
                 if(false !==stripos('sqlsrv', $driver_name)){	$driver = 'sqlsrv'; $idstmt=$idefsql[$driver];
                 }

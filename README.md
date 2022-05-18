@@ -1,6 +1,12 @@
 # plog
 
-PSR3 logging library that is PDO extendable and simple to use
+PSR-3 logging library that is PDO extendable and simple to use
+
+#### Features
+- single file
+- singleton pattern
+- six log levels (info, notice, debug, warning, error, fatal)
+- `Plogger`, dsn support mysql, pgsql, sqlsrv, sqlite.
 
 ## TextLog Basic Usage
 
